@@ -1,0 +1,21 @@
+- hosts: localhost
+  gather_facts: no
+
+  vars:
+    resource_group: "{{ resource_group_name | default('RG_Ansible') }}"
+    pfx: "{{ 100000 | random() }}"
+    current_timestamp: "{{ '%Y-%m-%d' | strftime }}"
+    network_name: "rh_network"
+    subnet_name: "demo_subnet"
+    location: eastus
+    azure_tags:
+      creator: 'ansible'
+      organization: 'produccion'
+      project_id: "{{ project_id | default(pfx) }}"  
+    vm_list: 
+    - vm_name: "webserver"
+    - vm_name: "dbserver"
+
+  roles:
+  - azure
+ 

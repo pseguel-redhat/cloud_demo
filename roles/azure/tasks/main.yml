@@ -1,0 +1,91 @@
+---
+- name: Create a resource group
+  azure_rm_resourcegroup:
+    name: "{{ resource_group }}"
+    location: "{{ location }}"
+
+- name: Create virtual network
+  azure_rm_virtualnetwork:
+    resource_group: "{{ resource_group }}"
+    name: "{{ network_name }}" 
+    address_prefixes: "10.0.0.0/16"
+
+- name: Add subnet
+  azure_rm_subnet:
+    resource_group: "{{ resource_group }}"
+    address_prefix: "10.0.1.0/24"
+    virtual_network: "{{ network_name }}"
+    name: "{{ subnet_name }}" 
+
+- name: Create public IP address
+  azure_rm_publicipaddress:
+    resource_group: "{{ resource_group }}"
+    allocation_method: Static
+    name: "{{ item.vm_name }}"
+  loop: "{{ vm_list }}"
+
+- name: Create Network Security Group that allows SSHi, HTTP/HTTPs
+  azure_rm_securitygroup:
+    resource_group: "{{ resource_group }}"
+    name: "{{ item.vm_name }}"
+    rules:
+      - name: SSH
+        protocol: Tcp
+        destination_port_range: 22
+        access: Allow
+        priority: 1001
+        direction: Inbound
+      - name: HTTP
+        protocol: Tcp
+        destination_port_range: 80
+        access: Allow
+        priority: 1002
+        direction: Inbound
+      - name: HTTPs
+        protocol: Tcp
+        destination_port_range: 443
+        access: Allow
+        priority: 1003
+        direction: Inbound
+  loop: "{{ vm_list }}"
+
+- name: Create virtual network interface card
+  azure_rm_networkinterface:
+    resource_group: "{{ resource_group }}"
+    name: "{{ item.vm_name }}"
+    virtual_network: "{{ network_name }}"
+    subnet: "{{ subnet_name }}"
+    public_ip_name: "{{ item.vm_name }}"
+    security_group: "{{ item.vm_name }}"
+  loop: "{{ vm_list }}"
+
+- name: Create VM
+  azure_rm_virtualmachine:
+    resource_group: "{{ resource_group }}"
+    name: "{{ item.vm_name }}"
+    vm_size: "{{ vm_size | default('Standard_B1s') }}"
+    admin_username: "ansible-admin"
+    ssh_password_enabled: false
+    ssh_public_keys: 
+      - path: "/home/ansible-admin/.ssh/authorized_keys"
+        key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDRYn+VpVrD4YjM8UrKJQ/gZnBqMmPh8TzMr7hwiSQANkWfU1KbI7go0xJyBYOt4su+Miz8HtyHAVA2/oQs4Seu9YsRvtTpASEXNDH6HkisNHL6IfOMGiqraZ8EUUAAkLwkqdCCBCC2Ygsm+GbEVRAjgiwKqWs+XaarRcl26zKj6T4CLMaSDGZStcwEgpMu1n1/TsPmPJJPNMgghe6fnI8bhBZW/3zxWfoXAHwZz5oF2eEwS92wBqCohqActOSfidz3wye3dH7e2+bP2m417KpWKO2uYgNo4rdE28y/XAZORUSzhgDToAcHgzlFl0lLdsXKxo4qsKS7vTEEdf2A3MT/ pseguel@pseguel-OSX"
+#       key_data: "{{ public_key }}"
+    network_interfaces: "{{ item.vm_name }}"
+    tags: "{{ azure_tags }}"
+    image:
+      offer: RHEL
+      publisher: RedHat
+      sku: 7-LVM
+      version: latest
+  loop: "{{ vm_list }}"
+  register: created_vms
+
+- name: check facts
+  debug:
+    var: created_vms
+
+- name: Add public IPs, VMs to a fact
+  set_fact: 
+    azure_vms: created_vms      
+    #loop: "{{ created_vms }}"
+
