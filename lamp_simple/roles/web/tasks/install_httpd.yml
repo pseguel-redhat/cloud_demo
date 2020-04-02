@@ -15,8 +15,11 @@
     - libselinux-python
 
 - name: insert iptables rule for httpd
-  lineinfile: dest=/etc/sysconfig/iptables create=yes state=present regexp="{{ httpd_port }}" insertafter="^:OUTPUT "
-              line="-A INPUT -p tcp  --dport {{ httpd_port }} -j  ACCEPT"
+  iptables:
+    chain: INPUT
+    destination_port: 80
+    jump: ACCEPT
+    protocol: tcp
   notify: restart iptables
 
 - name: http service state
