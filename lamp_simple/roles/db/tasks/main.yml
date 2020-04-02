@@ -1,13 +1,17 @@
 ---
 # This playbook will install mysql and create db user and give permissions.
 
-- name: Install Mysql package
+- name: Install Mysql from Repo
+  yum:
+    name: https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm
+    state: present
+
+- name: Install Mysql extra packages
   yum: 
     name: "{{ packages }}"
     state: present
   vars:
     packages: 
-    - mysql-server
     - MySQL-python
     - libselinux-python
     - libsemanage-python
