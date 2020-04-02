@@ -11,7 +11,7 @@
     azure_tags:
       creator: 'ansible'
       organization: 'produccion'
-      project_id: "{{ project_id | default(pfx) }}"  
+      family: 'CloudDemo' 
     vm_list: 
     - vm_name: "webserver"
     - vm_name: "dbserver"

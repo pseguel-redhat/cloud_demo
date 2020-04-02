@@ -69,13 +69,15 @@
     ssh_public_keys: 
       - path: "/home/ansible-admin/.ssh/authorized_keys"
         key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDRYn+VpVrD4YjM8UrKJQ/gZnBqMmPh8TzMr7hwiSQANkWfU1KbI7go0xJyBYOt4su+Miz8HtyHAVA2/oQs4Seu9YsRvtTpASEXNDH6HkisNHL6IfOMGiqraZ8EUUAAkLwkqdCCBCC2Ygsm+GbEVRAjgiwKqWs+XaarRcl26zKj6T4CLMaSDGZStcwEgpMu1n1/TsPmPJJPNMgghe6fnI8bhBZW/3zxWfoXAHwZz5oF2eEwS92wBqCohqActOSfidz3wye3dH7e2+bP2m417KpWKO2uYgNo4rdE28y/XAZORUSzhgDToAcHgzlFl0lLdsXKxo4qsKS7vTEEdf2A3MT/ pseguel@pseguel-OSX"
-#       key_data: "{{ public_key }}"
     network_interfaces: "{{ item.vm_name }}"
     tags: "{{ azure_tags }}"
     image:
-      offer: RHEL
-      publisher: RedHat
-      sku: 7-LVM
+#      offer: RHEL
+#      publisher: RedHat
+#      sku: 7-LVM
+      offer: CentOS
+      publisher: OpenLogic
+      sku: 7.5
       version: latest
   loop: "{{ vm_list }}"
   register: created_vms

@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  gather_facts: no
+
+  vars:
+    current_timestamp: "{{ '%Y-%m-%d_%H%M%S%' | strftime }}" 
+
+  tasks:
+  - debug: 
+      msg: "first timestamp  = {{ current_timestamp }}"
+  - pause:
+      seconds: 5
+  - debug: 
+      msg: "second timestamp = {{ current_timestamp }}"
