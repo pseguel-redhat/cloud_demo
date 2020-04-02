@@ -13,8 +13,8 @@
       organization: 'produccion'
       family: 'CloudDemo' 
     vm_list: 
-    - vm_name: "webserver"
-    - vm_name: "dbserver"
+    - vm_name: "web3"
+    - vm_name: "web2"
 
   roles:
   - azure
