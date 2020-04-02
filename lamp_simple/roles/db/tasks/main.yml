@@ -3,7 +3,7 @@
 
 - name: Install Mysql package
   yum: 
-    name: {{ packages }} 
+    name: "{{ packages }}"
     state: present
   vars:
     packages: 
